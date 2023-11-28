@@ -1,7 +1,6 @@
 import os
 import dotenv
 import scrapy
-from scrapy.http import HtmlResponse
 
 
 def build_url() -> str:
@@ -19,12 +18,13 @@ def build_url() -> str:
 
 
 def parse_detail_page(job: scrapy.http.Response) -> dict:
-    skills = os.environ["SCRAPY_SKILLS"]
-    skills = skills.split(", ")
     text_description = job.xpath(
-        "//section[1]/div/div/section[1]/div/div/section/div"
+        "//section[1]/div/div/section[1]/div/div/section"
+    ).getall()
+    title = job.xpath(
+        "//section[1]/div/section[2]/div/div[1]/div/h1/text()"
     ).get()
-    yield {"url": job.url, "text": text_description}
+    yield {"title": title, "url": job.url, "text": text_description}
 
 
 class JobCollectorSpider(scrapy.Spider):
